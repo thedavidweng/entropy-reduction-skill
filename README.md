@@ -4,6 +4,28 @@ A Claude Code skill for systematic codebase entropy reduction.
 
 Designed for AI-first and vibe coding teams where code accumulates disorder quickly. This skill guides Claude to identify and reduce **structural, semantic, behavioral, and evolutionary entropy** — making codebases easier to maintain and evolve.
 
+## Why This Exists
+
+Entropy, in thermodynamics, is the measure of disorder in a system. The second law of thermodynamics says it only goes up — the universe trends toward chaos, and nothing you do can stop it.
+
+Codebases are no different. Except worse. Because the universe doesn't have product managers.
+
+Every feature adds a little disorder. Every "just ship it" PR adds a little more. Every time someone names the same concept `user` in one module, `member` in another, and `account` in a third — congratulations, you've just invented semantic entropy. Every time a function grows from 20 lines to 200 because "it's easier to just add it here" — that's structural entropy. Every time the same error returns a 400 in one endpoint, a 422 in another, and a 500 with a passive-aggressive message in a third — that's behavioral entropy.
+
+And then there's **vibe coding**.
+
+Vibe coding is beautiful. You describe what you want, AI writes it, you ship it. Incredible velocity. Revolutionary productivity. The future of software engineering.
+
+It's also an entropy accelerator.
+
+When AI writes code, it doesn't remember what it named things last time. It doesn't check if there's already a `formatDate()` util before writing a new one. It doesn't know that your team decided on `snake_case` for API fields three months ago. Every AI-generated PR is a small, confident, locally-reasonable contribution to global chaos.
+
+Left unchecked, a vibe-coded repo eventually reaches **thermodynamic equilibrium** — a state of maximum entropy where every change is equally likely to break something, no one understands why anything is the way it is, and the only viable path forward is a rewrite (which will, of course, begin accumulating entropy immediately).
+
+This skill is the Maxwell's Demon of your codebase. It sorts the fast molecules from the slow ones. It fights the second law. It will lose eventually — entropy always wins — but it can buy you time. Probably a lot of time.
+
+Or, put simply: **your AI writes the code, this AI cleans up after it.**
+
 ## What It Does
 
 | Entropy Axis | What It Finds | What It Does |
