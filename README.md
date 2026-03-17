@@ -8,7 +8,7 @@ Designed for AI-first and vibe coding teams where code accumulates disorder quic
 
 Entropy, in thermodynamics, is the measure of disorder in a system. The second law of thermodynamics says it only goes up — the universe trends toward chaos, and nothing you do can stop it.
 
-Codebases are no different. Except worse. Because the universe doesn't have product managers.
+Codebases are no different. Except worse. Because the universe doesn't have deadlines.
 
 Every feature adds a little disorder. Every "just ship it" PR adds a little more. Every time someone names the same concept `user` in one module, `member` in another, and `account` in a third — congratulations, you've just invented semantic entropy. Every time a function grows from 20 lines to 200 because "it's easier to just add it here" — that's structural entropy. Every time the same error returns a 400 in one endpoint, a 422 in another, and a 500 with a passive-aggressive message in a third — that's behavioral entropy.
 
@@ -24,7 +24,7 @@ Left unchecked, a vibe-coded repo eventually reaches **thermodynamic equilibrium
 
 This skill is the Maxwell's Demon of your codebase. It sorts the fast molecules from the slow ones. It fights the second law. It will lose eventually — entropy always wins — but it can buy you time. Probably a lot of time.
 
-Or, put simply: **your AI writes the code, this AI cleans up after it.**
+Or, put simply: **the same AI that writes your code can now clean up after itself — if you teach it how.**
 
 ## What It Does
 
