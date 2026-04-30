@@ -27,8 +27,26 @@ npx skills add thedavidweng/skills \
 Use `--all` to install every skill in a repo without naming them.
 
 ```bash
-npx skills add thedavidweng/skills --full-depth --all
+npx skills add thedavidweng/skills --all
 ```
+
+---
+
+## Default Discovery Menu
+
+`npx skills add user/repo` only discovers top-level skill directories and known priority paths by default. For nested category layouts, keep a `.claude-plugin/plugin.json` manifest in the repository root so the installer shows the curated default multi-select menu without requiring `--full-depth`.
+
+```json
+{
+  "name": "repo-skills",
+  "skills": [
+    "./category/skill-one",
+    "./category/skill-two"
+  ]
+}
+```
+
+The `skills` entries must be relative paths starting with `./`, and each listed directory must contain a valid `SKILL.md`.
 
 ---
 
@@ -67,7 +85,7 @@ npx skills remove old-name -y
 ### 5. Verify
 
 ```bash
-npx skills add thedavidweng/skills --full-depth --skill new-name -y
+npx skills add thedavidweng/skills --skill new-name -y
 ```
 
 ---
@@ -135,15 +153,16 @@ Add the new skill to:
 - `wiki/README.md` skill table (if it's a wiki skill)
 - Root `README.md` skill table
 - Installation command examples
+- `.claude-plugin/plugin.json`, if the skill should appear in the default `npx skills add user/repo` menu
 
 ### 7. Test before pushing
 
 ```bash
 # Verify the skill appears in discovery
-npx skills add thedavidweng/skills --full-depth --list 2>&1 | grep new-skill-name
+npx skills add thedavidweng/skills --list 2>&1 | grep new-skill-name
 
 # Verify it installs cleanly
-npx skills add thedavidweng/skills --full-depth --skill new-skill-name -y
+npx skills add thedavidweng/skills --skill new-skill-name -y
 ```
 
 **Important**: `npx skills add` clones from GitHub. Local changes are invisible until committed and pushed.
@@ -157,7 +176,7 @@ When skill names change (e.g., during prefix unification), stale symlinks remain
 npx skills remove old-skill-name old-skill-name-2 -y
 
 # Install with new names
-npx skills add thedavidweng/skills --full-depth --skill new-skill-name -y
+npx skills add thedavidweng/skills --skill new-skill-name -y
 ```
 
 ---
@@ -202,7 +221,7 @@ rm -rf .agents/skills/
 # Add to .gitignore to prevent future accidental commits
 echo -e ".agents/\n.claude/\n.codebuddy/\n.kiro/\n.trae/\n" >> .gitignore
 # Reinstall cleanly from remote
-npx skills add thedavidweng/skills --full-depth --all -y
+npx skills add thedavidweng/skills --all -y
 ```
 
 ### Root Cause B: Excessively Long Descriptions

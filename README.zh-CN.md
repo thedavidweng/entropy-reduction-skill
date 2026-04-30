@@ -31,10 +31,14 @@ git clone https://github.com/thedavidweng/skills.git ~/.openclaw/skills/david-sk
 这些技能也适用于所有兼容 [Agent Skills](https://agentskills.io/specification) 的工具：Amp、Cline、Codex、Cursor、Gemini CLI、Kimi Code CLI、OpenCode、Warp，以及通用的 `.agents/skills` 路径。
 
 ```bash
-npx skills add thedavidweng/skills --full-depth
+npx skills add thedavidweng/skills
 ```
 
-> 所有 Agent 会自动发现其技能路径下的 `SKILL.md` 文件。使用 `--full-depth` 以安装嵌套技能（例如 `wiki/` 下的全部技能）。
+安装器会打开交互式多选菜单，列出本仓库中的技能。要一次性安装所有列出的技能，可以使用：
+
+```bash
+npx skills add thedavidweng/skills --all
+```
 
 ---
 
@@ -121,6 +125,8 @@ skill-name/
 - `references/` — 品牌指南模板、CLI 命令参考、支持文档
 
 分类目录（例如 `wiki/`、`code-review/`）下的 `README.md` 汇总该分类中的所有技能。
+
+仓库根目录还包含 `.claude-plugin/plugin.json`，用于声明 `npx skills add thedavidweng/skills` 默认展示哪些技能。新增、移动或重命名技能时，需要同步更新这个清单。
 
 ---
 

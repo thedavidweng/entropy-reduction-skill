@@ -31,10 +31,14 @@ Restart OpenClaw. Skills register on the next session start.
 These skills also work with any [Agent Skills](https://agentskills.io/specification)-compatible tool: Amp, Cline, Codex, Cursor, Gemini CLI, Kimi Code CLI, OpenCode, Warp, and the generic `.agents/skills` path.
 
 ```bash
-npx skills add thedavidweng/skills --full-depth
+npx skills add thedavidweng/skills
 ```
 
-> All agents auto-discover `SKILL.md` files under their skills path. Use `--full-depth` to install nested skills (e.g. everything under `wiki/`).
+The installer opens an interactive multi-select menu for the skills in this repository. Use `--all` to install every listed skill without selecting them one by one:
+
+```bash
+npx skills add thedavidweng/skills --all
+```
 
 ---
 
@@ -121,6 +125,8 @@ skill-name/
 - `references/` — brand guide templates, CLI command references, supporting docs
 
 Category directories (e.g. `wiki/`, `code-review/`) contain a `README.md` summarizing all skills in that group.
+
+The repository also includes `.claude-plugin/plugin.json`, which lists the skills that `npx skills add thedavidweng/skills` should show by default. Keep that manifest in sync when adding, moving, or renaming skills.
 
 ---
 

@@ -1,0 +1,22 @@
+{
+  "name": "david-skills",
+  "skills": [
+    "./skill-repo-maintenance",
+    "./youtube-content-ops",
+    "./code-review/entropy-reduction",
+    "./document-generation/cli-invoice",
+    "./document-generation/cover-letter",
+    "./document-generation/json-resume",
+    "./wiki/wiki-audit",
+    "./wiki/wiki-core",
+    "./wiki/wiki-inline-link-audit",
+    "./wiki/wiki-inline-linking",
+    "./wiki/wiki-link-audit",
+    "./wiki/wiki-quartz-publish",
+    "./wiki/wiki-slug-rename",
+    "./wiki/wiki-source-document-ingest",
+    "./wiki/wiki-source-integration",
+    "./wiki/wiki-sources-integrity",
+    "./wiki/wiki-vcf-import"
+  ]
+}
