@@ -10,31 +10,13 @@
 
 ## 安装
 
-### Hermes Agent
-
-```bash
-git clone https://github.com/thedavidweng/skills.git ~/.hermes/skills/david-skills
-```
-
-重启 Hermes。技能会从 `~/.hermes/skills/` 自动发现，无需额外配置。
-
-### OpenClaw
-
-```bash
-git clone https://github.com/thedavidweng/skills.git ~/.openclaw/skills/david-skills
-```
-
-重启 OpenClaw。技能会在下次会话启动时自动注册。
-
-### 其他 Agent
-
-这些技能也适用于所有兼容 [Agent Skills](https://agentskills.io/specification) 的工具：Amp、Cline、Codex、Cursor、Gemini CLI、Kimi Code CLI、OpenCode、Warp，以及通用的 `.agents/skills` 路径。
+适用于 [Hermes Agent](https://github.com/nousresearch/hermes-agent)、[OpenClaw](https://github.com/openclaw/openclaw) 以及所有兼容 [Agent Skills](https://agentskills.io/specification) 的工具（Amp、Cline、Codex、Cursor、Gemini CLI、Kimi Code CLI、OpenCode、Warp）。
 
 ```bash
 npx skills add thedavidweng/skills
 ```
 
-安装器会打开交互式多选菜单，列出本仓库中的技能。要一次性安装所有列出的技能，可以使用：
+安装器会打开交互式多选菜单。要一次性安装所有技能，可以使用：
 
 ```bash
 npx skills add thedavidweng/skills --all
@@ -87,6 +69,14 @@ npx skills add thedavidweng/skills --all
 | 技能 | 说明 |
 |------|------|
 | **[entropy-reduction](code-review/entropy-reduction/)** | 通过安全、渐进式重构，识别并修复结构性、语义性、行为性和演化性代码混乱。 |
+
+### 写作
+
+风格引导的内容生成与审查。
+
+| 技能 | 说明 |
+|------|------|
+| **[david-weng-writing-style](writing/david-weng-writing-style/)** | 按 David Weng 的个人风格写作或审查文字——直截了当、不废话。融合声音结构规则与中英混排排版规范。 |
 
 ---
 

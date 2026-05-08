@@ -10,31 +10,13 @@ Personal collection of skills compatible with [Hermes Agent](https://github.com/
 
 ## Installation
 
-### Hermes Agent
-
-```bash
-git clone https://github.com/thedavidweng/skills.git ~/.hermes/skills/david-skills
-```
-
-Restart Hermes. Skills are auto-discovered from `~/.hermes/skills/` — no config changes needed.
-
-### OpenClaw
-
-```bash
-git clone https://github.com/thedavidweng/skills.git ~/.openclaw/skills/david-skills
-```
-
-Restart OpenClaw. Skills register on the next session start.
-
-### Other Agents
-
-These skills also work with any [Agent Skills](https://agentskills.io/specification)-compatible tool: Amp, Cline, Codex, Cursor, Gemini CLI, Kimi Code CLI, OpenCode, Warp, and the generic `.agents/skills` path.
+Works with [Hermes Agent](https://github.com/nousresearch/hermes-agent), [OpenClaw](https://github.com/openclaw/openclaw), and any [Agent Skills](https://agentskills.io/specification)-compatible tool (Amp, Cline, Codex, Cursor, Gemini CLI, Kimi Code CLI, OpenCode, Warp).
 
 ```bash
 npx skills add thedavidweng/skills
 ```
 
-The installer opens an interactive multi-select menu for the skills in this repository. Use `--all` to install every listed skill without selecting them one by one:
+The installer opens an interactive multi-select menu. Use `--all` to install every skill without selecting one by one:
 
 ```bash
 npx skills add thedavidweng/skills --all
@@ -87,6 +69,14 @@ Systematic codebase maintenance for AI-first and vibe-coding teams.
 | Skill | Description |
 |-------|-------------|
 | **[entropy-reduction](code-review/entropy-reduction/)** | Identify and fix structural, semantic, behavioral, and evolutionary disorder through safe, incremental refactoring. |
+
+### Writing
+
+Style-guided content generation and review.
+
+| Skill | Description |
+|-------|-------------|
+| **[david-weng-writing-style](writing/david-weng-writing-style/)** | Write or review text in David Weng's personal style — direct, factual, no fluff. Combines voice & structure rules with bilingual typography. |
 
 ---
 
