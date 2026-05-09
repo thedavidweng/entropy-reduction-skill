@@ -44,14 +44,13 @@ Build and maintain a compounding knowledge base from your notes, messages, and d
 | **[wiki-link-audit](wiki/wiki-link-audit/)** | Verify backlink legitimacy. Catch false links and same-name collisions. |
 | **[wiki-quartz-publish](wiki/wiki-quartz-publish/)** | Publish your wiki as a private Quartz site. Strongly recommends Cloudflare Access / Zero Trust. |
 
-### YouTube Content Operations
+### Content Operations
 
 Generate channel-consistent metadata for uploaded videos.
 
 | Skill | Description |
 |-------|-------------|
-| **[youtube-content-ops](youtube-content-ops/)** | Generate titles, descriptions, and tags that match your channel's brand style. |
-
+| **[youtube-content-ops](content-ops/youtube-content-ops/)** | Generate titles, descriptions, and tags that match your channel's brand style. |\n
 ### Document Generation
 
 Text-as-source document workflows. Manage source files, not PDFs — generate on demand.
@@ -71,13 +70,19 @@ Systematic codebase maintenance for AI-first and vibe-coding teams.
 | **[entropy-reduction](code-review/entropy-reduction/)** | Identify and fix structural, semantic, behavioral, and evolutionary disorder through safe, incremental refactoring. |
 
 ### Writing
-
+\n
 Style-guided content generation and review.
-
+\n
 | Skill | Description |
 |-------|-------------|
 | **[david-weng-writing-style](writing/david-weng-writing-style/)** | Write or review text in David Weng's personal style — direct, factual, no fluff. Combines voice & structure rules with bilingual typography. |
-
+\n
+### Maintenance
+\n
+| Skill | Description |
+|-------|-------------|
+| **[skill-repo-maintenance](maintenance/skill-repo-maintenance/)** | Maintain and reorganize agent skills within a skills repository. Rename skills, fix installation commands, and avoid CLI pitfalls. |
+\n
 ---
 
 ## How It Works

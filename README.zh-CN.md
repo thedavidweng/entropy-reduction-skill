@@ -44,13 +44,13 @@ npx skills add thedavidweng/skills --all
 | **[wiki-link-audit](wiki/wiki-link-audit/)** | 验证反向链接合法性。捕获虚假链接和同名冲突。 |
 | **[wiki-quartz-publish](wiki/wiki-quartz-publish/)** | 将 Wiki 发布为私有 Quartz 站点。强烈建议使用 Cloudflare Access / Zero Trust。 |
 
-### YouTube 内容运营
+### Content Operations
 
 为已上传视频生成符合频道风格统一性的元数据。
 
 | 技能 | 说明 |
 |------|------|
-| **[youtube-content-ops](youtube-content-ops/)** | 生成匹配频道品牌风格的标题、描述和标签。 |
+| **[youtube-content-ops](content-ops/youtube-content-ops/)** | 生成匹配频道品牌风格的标题、描述和标签。 |
 
 ### 文档生成
 
@@ -71,13 +71,19 @@ npx skills add thedavidweng/skills --all
 | **[entropy-reduction](code-review/entropy-reduction/)** | 通过安全、渐进式重构，识别并修复结构性、语义性、行为性和演化性代码混乱。 |
 
 ### 写作
-
+\n
 风格引导的内容生成与审查。
-
+\n
 | 技能 | 说明 |
 |------|------|
 | **[david-weng-writing-style](writing/david-weng-writing-style/)** | 按 David Weng 的个人风格写作或审查文字——直截了当、不废话。融合声音结构规则与中英混排排版规范。 |
-
+\n
+### 维护
+\n
+| 技能 | 说明 |
+|------|------|
+| **[skill-repo-maintenance](maintenance/skill-repo-maintenance/)** | 维护和重组 Agent Skills 仓库。重命名技能、修复安装命令、规避 CLI 陷阱。 |
+\n
 ---
 
 ## 使用方法

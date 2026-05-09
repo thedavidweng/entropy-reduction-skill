@@ -1,8 +1,8 @@
 {
   "name": "david-skills",
   "skills": [
-    "./skill-repo-maintenance",
-    "./youtube-content-ops",
+    "./maintenance/skill-repo-maintenance",
+    "./content-ops/youtube-content-ops",
     "./code-review/entropy-reduction",
     "./document-generation/cli-invoice",
     "./document-generation/cover-letter",
