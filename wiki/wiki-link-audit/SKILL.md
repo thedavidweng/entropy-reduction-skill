@@ -93,7 +93,7 @@ for root, dirs, files in os.walk("wiki"):
 ### Common Culprits
 - John (multiple people)
 - Peter (4+ people in a network)
-- Jack, Leo, Kiki, Alice, Chelsea, David, Eden, Emily, Sherry, Rachel
+- Alex, Jordan, Taylor, Morgan, Casey, Riley, Quinn, Avery, Sage, Jordan
 
 ### Fix
 Replace `[[wrong-slug|EnglishName]]` with `[[correct-slug|EnglishName]]`. Verify context (family relationships, social circles) to determine correct target.

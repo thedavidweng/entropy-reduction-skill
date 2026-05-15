@@ -75,7 +75,7 @@ for c in parsed:
 
 Then match wiki aliases against this map. Also store by nickname for English name matching.
 
-**English nickname collisions** — common names (Peter, John, David, Jack, Leo, etc.) may match multiple people. NEVER match by English nickname alone. Verify with QQ number, email, or phone overlap.
+**English nickname collisions** — common names (Alex, Jordan, Taylor, Morgan, Casey, etc.) may match multiple people. NEVER match by English nickname alone. Verify with QQ number, email, or phone overlap.
 
 Before creating new pages, check for duplicate pages (same person, different filename). Compare aliases, emails, and phone numbers across all existing pages.
 

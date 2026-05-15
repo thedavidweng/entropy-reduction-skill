@@ -36,7 +36,7 @@ Process:
 
 **Fix pattern**: `[[slug|matched text]]` — use display text matching what's in the body.
 
-**Pitfall**: Watch for split links like `[[slug|David]] [[slug|Weng]]` — should be `[[slug|David Weng]]`. Detect by checking adjacent wikilinks to same target.
+**Pitfall**: Watch for split links like `[[slug|Jane]] [[slug|Doe]]` — should be `[[slug|Jane Doe]]`. Detect by checking adjacent wikilinks to same target.
 
 ### 3. Prohibited Pattern Scan
 

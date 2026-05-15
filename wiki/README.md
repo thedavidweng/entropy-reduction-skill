@@ -2,7 +2,7 @@
 
 Personal knowledge management skills for building, auditing, and publishing wikis.
 
-**Video:** [skills-showcase.mp4](https://thedavidweng.github.io/video-work/projects/skills-showcase/out/skills-showcase.mp4)
+**Video:** [skills-showcase.mp4](https://example.com/video-placeholder.mp4)
 
 | Skill | Description |
 |-------|-------------|

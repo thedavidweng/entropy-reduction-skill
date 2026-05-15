@@ -257,7 +257,7 @@ When inheriting or reviewing a skills repo, audit for accidentally committed per
 Search for common PII categories:
 
 ```bash
-grep -rn -E '(翁|献|琼|静雯|杨杨|冠豪|Jianshuang|Lanfei|Hui-Fen|Menglin|david-weng|weng-jia|绣山|CSW|UBC|150,000|youtube\\.token|YUTU_CACHE|~/yout)' wiki/ code-review/ content-ops/ maintenance/ skill-repo-maintenance/
+grep -rn -E '(张三|李四|王五|赵六|Jane|Doe|John|Smith|示例学校|UNI-A|UNI-B|99,999|api\\.token|CACHE_DIR|~/tok)' wiki/ code-review/ content-ops/ maintenance/ skill-repo-maintenance/
 ```
 
 Typical categories to check:

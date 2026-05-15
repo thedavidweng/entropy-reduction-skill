@@ -49,7 +49,7 @@ Two layers: **Voice & Structure** + **Typography & Punctuation**.
 **Sections:**
 - Simple heading hierarchy (`##` primary, `###` secondary). No deep nesting.
 - Guide/DP headings: objective nouns or short phrases only.
-  e.g. "基础概念", "背景", "英澳 HSBC 的开户顺序"
+  e.g. "基础概念", "背景", "银行开户顺序"
 - Date entries: `## 日期 · 简短描述`
 - Parallel structure: basic → advanced, or background → process → result.
 - Blank line between paragraphs. No blank line between heading and body.
@@ -147,7 +147,7 @@ Apply to all genres, strictest for Guide/DP:
 - Chinese + English: `通过 Google 搜索引擎` ✓
 - Chinese + number: `2016 年 4 月 29 日` ✓
 - Number + unit: `458 ppi` ✓ (except Apple design conventions)
-- Chinese + link: `庭说的[博客](https://tingtalk.me/)于 2017 年运营` ✓
+- Chinese + link: `某博客的[链接](https://example.com/)于 2017 年运营` ✓
 
 **Proper Nouns (correct casing):**
 - `GitHub` (not Github, github)
@@ -164,7 +164,7 @@ Apply to all genres, strictest for Guide/DP:
 - **Ban em dash (—)**. Use hyphen (-) or en dash (–) if needed.
 
 **Quotations & Titles:**
-- Chinese titles: 《大醉侠》, 《加拿大留学生银行账户指南》
+- Chinese titles: 《大醉侠》, 《留学生生活指南》
 - English works: *Super Mario Clouds* (italic)
 - Chinese quotes: 「引号」, English quotes: "quotes"
 
@@ -195,8 +195,8 @@ Before delivering text, verify:
 ## Examples
 
 **DP Timeline (positive):**
-> **8.1 · Wells Fargo → U.S. Bank**
-> 从 Wells Fargo 发起一笔 ACH 转账 $3,000 到刚开好的 U.S. Bank 账户，到账后被识别为直接存款。第一笔 Fake DD 达成。
+> **8.1 · 银行 A → 银行 B**
+> 从银行 A 发起一笔 ACH 转账 $3,000 到刚开好的银行 B 账户，到账后被识别为直接存款。Fake DD 验证完成。
 
 Only action, amount, result. No "DOC 上充分验证过".
 
