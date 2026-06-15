@@ -68,6 +68,7 @@ Systematic codebase maintenance for AI-first and vibe-coding teams.
 | Skill | Description |
 |-------|-------------|
 | **[entropy-reduction](code-review/entropy-reduction/)** | Identify and fix structural, semantic, behavioral, and evolutionary disorder through safe, incremental refactoring. |
+| **[go-production-review](code-review/go-production-review/)** | Audit Go codebases against production best practices — modules, error handling, concurrency, tests, security, CI/CD, observability. |
 
 ### Writing
 \n

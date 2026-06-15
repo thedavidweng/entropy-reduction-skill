@@ -4,6 +4,7 @@
     "./maintenance/skill-repo-maintenance",
     "./content-ops/youtube-content-ops",
     "./code-review/entropy-reduction",
+    "./code-review/go-production-review",
     "./document-generation/cli-invoice",
     "./document-generation/cover-letter",
     "./document-generation/json-resume",

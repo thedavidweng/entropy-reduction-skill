@@ -1,0 +1,10 @@
+name: go-production-review
+description: |
+  Audit Go codebases against production best practices from Production Go.
+  Covers modules/toolchain, formatting, error handling, unicode, concurrency,
+  tests, benchmarks, static analysis, security, CI/CD, and observability.
+  Produces evidence-backed findings, severity-ranked risks, and remediation steps.
+
+  Triggers on: "review Go code", "audit Go repo", "Go production readiness",
+  "Go best practices", "harden Go service", "Go codebase review",
+  "production go checklist", "Go security audit".

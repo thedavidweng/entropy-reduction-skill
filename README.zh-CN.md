@@ -69,6 +69,7 @@ npx skills add thedavidweng/skills --all
 | 技能 | 说明 |
 |------|------|
 | **[entropy-reduction](code-review/entropy-reduction/)** | 通过安全、渐进式重构，识别并修复结构性、语义性、行为性和演化性代码混乱。 |
+| **[go-production-review](code-review/go-production-review/)** | 审计 Go 代码库的生产就绪性——模块、错误处理、并发、测试、安全、CI/CD、可观测性。 |
 
 ### 写作
 \n
