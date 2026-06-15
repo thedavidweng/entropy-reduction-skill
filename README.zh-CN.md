@@ -72,20 +72,19 @@ npx skills add thedavidweng/skills --all
 | **[go-production-review](code-review/go-production-review/)** | 审计 Go 代码库的生产就绪性——模块、错误处理、并发、测试、安全、CI/CD、可观测性。 |
 
 ### 写作
-\n
+
 风格引导的内容生成与审查。
-\n
+
 | 技能 | 说明 |
 |------|------|
 | **[david-weng-writing-style](writing/david-weng-writing-style/)** | 按 David Weng 的个人风格写作或审查文字——直截了当、不废话。融合声音结构规则与中英混排排版规范。 |
-\n
+
 ### 维护
-\n
+
 | 技能 | 说明 |
 |------|------|
 | **[skill-repo-maintenance](maintenance/skill-repo-maintenance/)** | 维护和重组 Agent Skills 仓库。重命名技能、修复安装命令、规避 CLI 陷阱。 |
 | **[stale-docs-cleanup](maintenance/stale-docs-cleanup/)** | 清理过期文档，将未来工作移入 issue，保留面向人工的指南和冻结接口契约。 |
-\n
 ---
 
 ## 使用方法
