@@ -71,6 +71,14 @@ npx skills add thedavidweng/skills --all
 | **[entropy-reduction](code-review/entropy-reduction/)** | 通过安全、渐进式重构，识别并修复结构性、语义性、行为性和演化性代码混乱。 |
 | **[go-production-review](code-review/go-production-review/)** | 审计 Go 代码库的生产就绪性——模块、错误处理、并发、测试、安全、CI/CD、可观测性。 |
 
+### Web 开发
+
+审计并优化网站的 AI 可发现性和 Agent 体验。
+
+| 技能 | 说明 |
+|------|------|
+| **[aeo-audit](web-dev/aeo-audit/)** | 审计任意网站的 Agent 体验优化——llms.txt、schema.org、语义化 HTML、站点地图及跨信号一致性。 |
+
 ### 写作
 
 风格引导的内容生成与审查。

@@ -71,6 +71,14 @@ Systematic codebase maintenance for AI-first and vibe-coding teams.
 | **[entropy-reduction](code-review/entropy-reduction/)** | Identify and fix structural, semantic, behavioral, and evolutionary disorder through safe, incremental refactoring. |
 | **[go-production-review](code-review/go-production-review/)** | Audit Go codebases against production best practices — modules, error handling, concurrency, tests, security, CI/CD, observability. |
 
+### Web Development
+
+Audit and optimize websites for AI discoverability and agent experience.
+
+| Skill | Description |
+|-------|-------------|
+| **[aeo-audit](web-dev/aeo-audit/)** | Audit any website for Agent Experience Optimization — llms.txt, schema.org, semantic HTML, sitemap, and cross-signal consistency. |
+
 ### Writing
 
 Style-guided content generation and review.
