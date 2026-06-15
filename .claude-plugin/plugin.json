@@ -2,6 +2,7 @@
   "name": "david-skills",
   "skills": [
     "./maintenance/skill-repo-maintenance",
+    "./maintenance/stale-docs-cleanup",
     "./content-ops/youtube-content-ops",
     "./code-review/entropy-reduction",
     "./code-review/go-production-review",

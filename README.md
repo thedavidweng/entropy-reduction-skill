@@ -83,6 +83,7 @@ Style-guided content generation and review.
 | Skill | Description |
 |-------|-------------|
 | **[skill-repo-maintenance](maintenance/skill-repo-maintenance/)** | Maintain and reorganize agent skills within a skills repository. Rename skills, fix installation commands, and avoid CLI pitfalls. |
+| **[stale-docs-cleanup](maintenance/stale-docs-cleanup/)** | Delete stale docs, move future work into issues, preserve human-facing guides and frozen contracts. |
 \n
 ---
 
