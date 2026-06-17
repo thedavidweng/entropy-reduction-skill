@@ -59,3 +59,13 @@ python3 -c "from youtube_transcript_api import YouTubeTranscriptApi; print('avai
 1. yutu works → **Full Access Mode**
 2. yutu fails, youtube-transcript-api works → **Read-Only Mode**
 3. Both fail → Prompt user to install one of them
+
+## Mid-Session Auth Expiry
+
+If `yutu` commands start failing with auth errors mid-session (token expired, `401`, `403`), **do not fall back to web scraping or other workarounds.** Stop the task, report the error, and ask the user to re-authenticate:
+
+```bash
+yutu auth --credential client_secret.json
+```
+
+Resume only after the user confirms re-authentication succeeded.

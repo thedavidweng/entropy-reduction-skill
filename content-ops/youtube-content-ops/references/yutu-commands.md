@@ -214,7 +214,7 @@ export YUTU_LOG_LEVEL=DEBUG
 | Error | Cause | Solution |
 |-------|-------|----------|
 | `dailyLimitExceeded` | API quota exhausted | Wait for next day or request higher quota |
-| `authError` | Token expired or invalid | Re-run `yutu auth` |
+| `authError` | Token expired or invalid | **Stop immediately.** Tell user to re-run `yutu auth --credential client_secret.json`. Do not attempt workarounds. |
 | `forbidden` | No permission for this resource | Check OAuth scope |
 | `notFound` | Video/channel does not exist | Verify the ID is correct |
 | `quotaExceeded` | Request rate too high | Reduce request frequency |
