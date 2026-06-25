@@ -11,26 +11,6 @@ description: 'USE THIS SKILL whenever the user wants to: ingest a certificate, c
 
 Take a raw document (certificate, contract, income proof, employment letter) provided as text and systematically integrate it into the wiki as both a source document and structured wiki data.
 
-## When to Use
-
-- User provides a text document to be preserved in the wiki
-- Document contains verifiable facts about a person, place, or organization
-- Facts should become part of the canonical wiki knowledge base
-- Document is valuable enough to archive in `sources/` (not just referenced externally)
-
-## When NOT to Use
-
-- Document lives externally and should only be linked by path (use `vault-cross-reference`)
-- Document is trivial or low-value (use `sources/docs/OCR-Only/` or discard)
-- OCR extraction needed from scanned images (use `identity-ocr` or `obsidian-ocr-cleanup`)
-
-## Before Starting
-
-1. Read the target document fully
-2. Read the existing wiki page for the entity (if it exists) with `read_file(path=...)` using skill_view
-3. Check `sources/docs/readme.md` to understand the Archive vs OCR-Only policy
-4. Scan for existing similar source documents to follow naming conventions
-
 ## Step-by-Step Process
 
 ### Step 1: Decide Source Location
@@ -123,10 +103,8 @@ assert search_files(pattern="new-doc.md", path="wiki/people/").get('total_count'
 
 Verify the person page renders cleanly with all wikilinks resolved.
 
-## Pitfalls Learned
+## Constraints
 
-- **Source vs Reference**: Ingesting (copying into `sources/`) is NOT the same as referencing (external path). Ingest when user provides document text and expects it archived in wiki.
-- **Archive vs OCR-Only**: Use `Archive/` for documents that must be provable/re-checkable later. Use `OCR-Only/` for low-value content where only the text matters.
-- **Don't break existing content**: When inserting new sections, verify you're not truncating or orphanizing existing sentences. Use `read_file` with context first.
-- **Duplicate data**: Avoid repeating bio details already in page intro. Employment section should be concise structured data, not re-telling the whole story.
-- **Date formatting**: Use `YYYY-MM-DD` for dates in metadata. Narrative dates can be Chinese `YYYY年M月D日`.
+- **Archive vs OCR-Only:** Save to `sources/docs/Archive/` for permanent/legal provenance; save to `sources/docs/OCR-Only/` if only plaintext searchability is needed.
+- **Biographical Dupes:** Avoid repeating bio details already in the page introduction. The new section must be concise and structured.
+- **Date Format:** Use `YYYY-MM-DD` for metadata dates. Narrative dates in text can use Chinese `YYYY年M月D日`.

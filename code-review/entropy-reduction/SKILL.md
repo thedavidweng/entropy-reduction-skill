@@ -3,11 +3,9 @@ name: entropy-reduction
 description: "USE THIS SKILL whenever the user wants to: refactor a codebase, clean up tech debt, improve code consistency, reduce complexity, make a codebase more maintainable, or when the user mentions entropy, code quality, code health, or asks to clean up or simplify a module, directory, or entire repo. Especially valuable for AI-first and vibe coding teams where code accumulates disorder quickly."
 ---
 
-Systematically reduce codebase disorder without breaking existing behavior. Your job is not to add features — it is to identify high-entropy areas and make them lower-entropy through safe, incremental refactoring.
+Systematically reduce codebase disorder without breaking existing behavior. Identify high-entropy areas and lower entropy through safe, incremental refactoring. Prioritize obviously high-entropy areas over minor style issues.
 
-## Philosophy
-
-Entropy in a codebase is the accumulation of inconsistency, unnecessary complexity, and structural disorder that makes future changes harder. It comes from four axes:
+## Entropy Axes
 
 | Axis | What it means | Typical symptoms |
 |------|--------------|------------------|
@@ -15,8 +13,6 @@ Entropy in a codebase is the accumulation of inconsistency, unnecessary complexi
 | **Semantic** | Naming, concepts, state representation | Same concept with multiple names, scattered state machines, ad-hoc data models |
 | **Behavioral** | API contracts, error handling, boundary behavior | Inconsistent error responses, different status codes for the same error class, env-dependent behavior |
 | **Evolutionary** | Change patterns, ownership, understandability | Giant mixed-purpose PRs, no clear module ownership, design intent buried in chat history |
-
-Prioritize: **obviously high-entropy areas >> minor style issues**. Never rewrite stable, well-functioning code just for aesthetics.
 
 ## Workflow
 

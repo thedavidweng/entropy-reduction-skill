@@ -8,13 +8,7 @@ description: 'USE THIS SKILL whenever the user wants to: build a personal knowle
 
 # Personal Knowledge Wiki
 
-Inspired by [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): a persistent, compounding knowledge base maintained by an LLM. Instead of re-discovering knowledge from raw documents on every query, the LLM incrementally compiles source material into a structured, interlinked markdown wiki at ingest time.
-
-> "The key difference: the wiki is a persistent, compounding artifact. Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase."
-
-You are a **writer** compiling this wiki from personal data. Not a filing clerk. A writer. Your job is to read entries, understand what they mean, and write articles that capture understanding. The wiki is a map of a mind.
-
-The question is never "where do I put this fact?" It is: **"what does this mean, and how does it connect to what I already know?"**
+An LLM-maintained, interlinked markdown wiki that compiles source material into canonical pages.
 
 ---
 
@@ -138,14 +132,12 @@ The core compilation step. Date ranges: `last 30 days`, `2026-03`, `2026-03-22`,
 
 ### The Absorption Loop
 
-Process entries chronologically. Read `system/wiki/index.md` before each entry to match against existing articles. Re-read every article before updating.
+Process entries chronologically. Read `system/wiki/index.md` before each entry.
 
 For each entry:
-1. **Read** the entry (text, metadata, attached photos).
-2. **Understand** what it means — not just facts, but significance.
-3. **Match** against the index. What articles does this touch? What suggests a new article?
-4. **Update/create articles.** Re-read before updating. Ask: "what new dimension does this entry add?" Integrate so the article reads as a coherent whole. Never just append.
-5. **Connect to patterns.** Themes across entries deserve concept articles.
+1. Match terms against the index in `system/wiki/index.md`.
+2. Create or update targeted articles in `wiki/` following layout rules (never just append).
+3. Connect related pages using inline `[[wikilinks]]`.
 ### What Becomes an Article
 
 **Named things get pages** if there's enough material. A person mentioned once in passing doesn't need a stub. A person who appears across **2 or more sources** with a distinct role does. If you can't write at least 3 meaningful sentences, don't create the page yet. Note it in the article where they appear, and create the page when more material arrives.
@@ -154,15 +146,10 @@ Single-source mentions that are central to that source (e.g., a whole meeting ab
 
 **Patterns and themes get pages.** When you notice the same idea surfacing across entries (a creative philosophy, a recurring emotional arc, a search pattern, a learning style) that's a concept article. These are often the most valuable articles in the wiki.
 
-### Anti-Cramming
+### Content Spacing Guidelines
 
-The gravitational pull of existing articles is the enemy. It's always easier to append a paragraph to a big article than to create a new one. This produces 5 bloated articles instead of 30 focused ones.
-
-If you're adding a third paragraph about a sub-topic to an existing article, that sub-topic probably deserves its own page.
-
-### Anti-Thinning
-
-Creating a page is not the win. Enriching it is. A stub with 3 vague sentences when 4 other entries also mentioned that topic is a failure. Every time you touch a page, it should get richer.
+- **Anti-Cramming:** Avoid overloading existing articles. If a sub-topic has three or more paragraphs inside an article, extract it to its own page.
+- **Anti-Thinning:** Ensure new pages are rich. Do not create stubs under 3 meaningful sentences.
 
 ### Update Policy
 
@@ -442,11 +429,7 @@ Load `references/pitfalls.md` before debugging broken links, index drift, or une
 
 ---
 
-## Principles
+## Constraints
 
-- **The wiki is the memory.** Sources are raw; the wiki is canonical.
-- **Never silently delete.** Deprecate with redirects and notes.
-- **Prefer links over lists.** A linked mention > a list entry.
-- **Sources are append-only.** Never edit a source after import.
-- **The LLM is the writer.** The human curates; the agent writes.
-- **Understanding over filing.** Ask "what does this mean?" not "where does this go?"
+- **Never silently delete:** Deprecate pages with redirects and notes instead of deleting.
+- **Read-only query:** The query command is read-only; never modify wiki files during query.

@@ -21,20 +21,9 @@ yutu channel list --output json 2>/dev/null && echo "FULL" || \
   (youtube_transcript_api --help >/dev/null 2>&1 && echo "READ_ONLY" || echo "NONE")
 ```
 
-## Authentication Failure — Hard Stop
+## Constraints
 
-**If any `yutu` command returns an auth error (token expired, invalid credentials, `authError`, `401`, `403`), stop the current task immediately.** Do NOT:
-- Retry the command
-- Fall back to `web fetch`, `curl`, or any other HTTP workaround to scrape YouTube pages
-- Attempt to refresh or regenerate tokens automatically
-- Continue the workflow in read-only mode without telling the user
-
-**Instead:**
-1. Report the auth failure to the user with the exact error message
-2. Tell the user to re-run `yutu auth --credential client_secret.json`
-3. Wait for the user to confirm re-authentication before resuming
-
-This applies to every step of the workflow — transcript fetch, video update, search, etc. An expired token is not a "find a workaround" situation; it is a "stop and ask the user to fix it" situation.
+- **Auth Stop:** If any `yutu` command returns an authentication error (e.g., `authError`, `401`, `403`), immediately abort the task, report the raw error to the user, instruct them to run `yutu auth --credential client_secret.json`, and halt execution. Do not retry or attempt manual/automated HTTP scraper workarounds.
 
 ## Workflow
 

@@ -8,14 +8,6 @@ description: 'USE THIS SKILL whenever the user wants to: audit wiki backlinks, v
 
 # Wiki Link Audit — Reverse from Source
 
-## Purpose
-Audit wiki integrity by starting from heavily backlinked source pages and checking if all pages linking to them are legitimate. More efficient than checking pages randomly.
-
-## When to Use
-- After bulk data imports (social media, VCF contacts)
-- Periodically for wiki quality assurance
-- When user reports "很多链接是错的"
-
 ## Steps
 
 1. **Find backlink frequency**: Scan all wiki .md files for `[[target]]`, count per slug, sort by frequency.

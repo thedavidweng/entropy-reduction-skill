@@ -178,19 +178,6 @@ Apply to all genres, strictest for Guide/DP:
 - Roman numerals: Ⅰ, Ⅱ, Ⅲ (as units)
 - Multiplication sign: ×
 
-## Revision Checklist
-
-Before delivering text, verify:
-
-- [ ] **Date entries**: Only action + result? No evaluation or explanation?
-- [ ] **Background**: Every listed condition necessary for reproduction? No "我还准备了……"?
-- [ ] **Closing**: Ends immediately after result? No commentary or outlook?
-- [ ] **Em dash check**: Zero em dashes in entire text?
-- [ ] **Code block**: Complete DP/guide article in one code block (frontmatter + all links)?
-- [ ] **Colloquial check**: Any cheesy closing, pseudo-intimate language, over-metaphor? Delete or neutralize.
-- [ ] **Bilingual spacing**: Half-width spaces between Chinese and English/numbers throughout?
-- [ ] **Proper nouns**: Correct casing (GitHub, iOS, Wi-Fi, macOS, YouTube)?
-- [ ] **Blacklist scan**: No "大家", "简单来说", "顾名思义", "以上就是", semicolons as connectors?
 
 ## Examples
 
