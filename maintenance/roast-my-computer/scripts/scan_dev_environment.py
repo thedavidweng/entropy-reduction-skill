@@ -503,7 +503,7 @@ def scan_repo(repo: Path, max_file_size: int, content_scan: bool, sensitive_cont
                             markers[detector] = markers.get(detector, 0) + count
                     for secret in scan_file_for_patterns(path, max_file_size, include_sensitive_key_files=sensitive_content_scan)[0]:
                         try:
-                            rel = str(path.resolve().relative_to(repo.resolve()))
+                            rel = path.resolve().relative_to(repo.resolve()).as_posix()
                         except (ValueError, OSError):
                             rel = ""
                         repo_info["secret_findings"].append({
