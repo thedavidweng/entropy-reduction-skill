@@ -620,11 +620,13 @@ def aggregate_for_red_flags(scan) -> list[dict]:
     rows = []
     for f in scan.get("findings", []):
         if f.get("category") == "secret_chaos":
-            rows.append({"path": f["paths"][0], "severity": f["severity"],
+            # Defensive: paths may be empty if a future detector emits a pathless finding.
+            rows.append({"path": f["paths"][0] if f.get("paths") else "",
+                         "severity": f["severity"],
                          "detector": f.get("detector"), "source": f.get("source", "user_config")})
     for repo in scan.get("repositories", []):
         for sf in repo.get("secret_findings", []):
-            rows.append({"path": sf["path"], "severity": sf["severity"],
+            rows.append({"path": sf.get("path", ""), "severity": sf["severity"],
                          "detector": sf.get("detector"), "source": sf.get("source", "user_config")})
     # 2. Merge by path: highest severity wins; keep all detector names; keep the
     #    highest-priority source so user_config surfaces over editor_cache etc.

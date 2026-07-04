@@ -175,7 +175,7 @@ def is_private_key_like_path(path: Path) -> bool:
 
 SEVERITY_RANK = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
-_EDITOR_CACHE_MARKERS = ("history", ".backups", "user data", "local history")
+_EDITOR_CACHE_DIR_NAMES = {"history", ".backups", "user data", "local history"}
 _TEST_DIR_NAMES = {"tests", "__tests__", "test", "fixtures", "__fixtures__", "spec", "specs"}
 
 
@@ -194,8 +194,11 @@ def path_is_under_app_bundle(path: Path) -> bool:
 
 
 def path_is_editor_cache(path: Path) -> bool:
-    lower = str(path).lower()
-    return any(marker in lower for marker in _EDITOR_CACHE_MARKERS)
+    """Match editor undo-history / auto-backup directories by path *component*,
+    not by substring. A project named ``credit-history-api`` is one component
+    and must not be treated as editor history; ``User/History/`` is two
+    components and should."""
+    return any(part.lower() in _EDITOR_CACHE_DIR_NAMES for part in path.parts)
 
 
 def path_is_test_fixture(path: Path) -> bool:
@@ -209,9 +212,13 @@ def classify_secret_finding(finding: "Finding", path: Path) -> None:
     """Tag ``source`` and cap severity to suppress known false-positive classes.
 
     - test fixtures (tests/, __tests__/, fixtures/, *_test.*, *.test.*): cap at medium
-    - public-key names or anything inside an .app bundle: cap at low
-    - editor undo-history / backup paths: keep severity but tag source=editor_cache
-      so cleanup copy can branch (clear editor history vs rotate committed keys)
+    - public-key file names (containing "public"/"pubkey"/"publickey"): cap at low;
+      tagged ``app_bundle_public_key`` when the file also lives under a *.app bundle,
+      ``public_key`` otherwise. A real private key under a developer's *.app project
+      directory is NOT downgraded — only the public-key-name signal triggers the cap.
+    - editor undo-history / backup directories (User/History/, .backups/, User Data/,
+      Local History/): keep severity but tag source=editor_cache so cleanup copy can
+      branch (clear editor history vs rotate committed keys)
     """
     if finding.category != "secret_chaos":
         return
@@ -219,7 +226,7 @@ def classify_secret_finding(finding: "Finding", path: Path) -> None:
         finding.source = "test_fixture"
         _cap_severity(finding, "medium")
         return
-    if is_public_key_name(path.name) or path_is_under_app_bundle(path):
+    if is_public_key_name(path.name):
         finding.source = "app_bundle_public_key" if path_is_under_app_bundle(path) else "public_key"
         _cap_severity(finding, "low")
         return

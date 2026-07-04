@@ -24,11 +24,11 @@ Each `secret_chaos` finding carries a `source` tag so cleanup copy can branch on
 
 | `source` | Meaning | Cleanup action |
 |----------|---------|----------------|
-| `user_config` | A file the user wrote or tracked (`.ssh`, `.aws`, `opencode.json`, `.env`, etc.) | Rotate / move to a secret store |
-| `editor_cache` | Editor undo-history or auto-backup that captured a key (e.g. `User/History/*.yaml`, `.backups/*.json`) | Clear editor history, then rotate the source key |
+| `user_config` | A file the user wrote or tracked (`.ssh`, `.aws`, `opencode.json`, `.env`, a real private key under a developer's `.app` project, etc.) | Rotate / move to a secret store |
+| `editor_cache` | Editor undo-history or auto-backup that captured a key (directory named `History`, `.backups`, `User Data`, or `Local History`) | Clear editor history, then rotate the source key |
 | `test_fixture` | A fake key in `tests/`, `__tests__/`, `fixtures/`, `*_test.*`, `*.test.*` | No action — these are redaction verification fixtures; severity is capped at medium |
 | `public_key` | A file whose name contains `public`/`pubkey`/`publickey` | No action — public keys are not secrets; severity is capped at low |
-| `app_bundle_public_key` | Any key-like file under a `*.app/Contents/` path | No action — app-bundle public keys are not user secrets; severity is capped at low |
+| `app_bundle_public_key` | A public-key-name file that also lives under a `*.app` path | No action — app-bundle public keys are not user secrets; severity is capped at low. A real private key under a developer's `.app` project directory is NOT downgraded (only the public-key-name signal triggers the cap). |
 
 Repo-scoped secrets in `repositories[].secret_findings[]` additionally carry `tracked_in_git` (true when the path appears in `git ls-files` output), which reconciles the previous overlap between `tracked_sensitive_config_files` and `secret_findings`: a tracked file now shows up once as a `secret_findings` entry with `tracked_in_git: true`, rather than as two separate concepts the agent had to merge by hand.
 
