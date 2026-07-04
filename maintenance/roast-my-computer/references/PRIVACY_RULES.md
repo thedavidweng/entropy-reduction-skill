@@ -9,7 +9,7 @@ The scan runs on the user's machine through their own agent. Treat all paths, do
 - Do not include source snippets, personal documents, email contents, browser history, or private chat logs in the report.
 - Do not follow symlinks.
 - Do not delete or modify files without explicit confirmation.
-- Write generated reports to the OS temp directory unless the user chooses another location.
+- Write generated reports to the stable report directory (`${TMPDIR:-/tmp}/roast-my-computer` on Unix, `%TEMP%\roast-my-computer` on Windows) unless the user chooses another location. This directory persists across sessions so the workflow can offer to recycle or clean up previous reports, but it is still inside the OS temp tree and will be cleared by the OS on its normal schedule.
 
 ## Secret handling
 

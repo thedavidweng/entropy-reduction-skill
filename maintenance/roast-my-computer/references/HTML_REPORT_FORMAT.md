@@ -25,7 +25,7 @@ Keep the page sparse enough that the HTML is obvious. The report should look lik
 
 ## Scaffold
 
-Write to `<tmpdir>/computer-roast-report-<timestamp>.html`. Use escaped values from `computer-roast-scan.json`.
+Write to `$REPORT_DIR/computer-roast-report-<timestamp>.html` where `$REPORT_DIR` is `${TMPDIR:-/tmp}/roast-my-computer` on Unix or `%TEMP%\roast-my-computer` on Windows. The stable directory lets the workflow's step 1 discover and offer to recycle previous reports. Use escaped values from `computer-roast-scan.json`.
 
 ```html
 <!doctype html>

@@ -13,7 +13,26 @@ Run locally through the executing agent, using the user's filesystem. Treat memo
 
 ## Workflow
 
-### 1. Pick one scope
+### 1. Check for existing reports
+
+Before scanning, check the stable report directory for artifacts from a previous run:
+
+```bash
+REPORT_DIR="${TMPDIR:-/tmp}/roast-my-computer"
+mkdir -p "$REPORT_DIR"
+ls -t "$REPORT_DIR"/computer-roast-report-*.html 2>/dev/null | head -1
+```
+
+On Windows use `%TEMP%\roast-my-computer` instead.
+
+If a previous report exists, ask the user:
+
+- **Open the existing report** — open the most recent HTML file with `open` / `xdg-open` / `start`. Skip scanning entirely. Done.
+- **Clean up and re-scan** — delete all `computer-roast-report-*.html` and `computer-roast-scan.json` in the report directory, then continue to step 2.
+
+If no previous report exists, continue directly to step 2.
+
+### 2. Pick one scope
 
 Offer only these choices unless the user already chose:
 
@@ -22,7 +41,7 @@ Offer only these choices unless the user already chose:
 
 Use Project for "this repo", "current workspace", "safe", or permission-limited runs. Use Global for "my computer", "full roast", "most accurate", or when the user wants the agent to use memory.
 
-### 2. Build roots
+### 3. Build roots
 
 For **Project**, use the current working directory. Add explicit paths only when the user supplied them.
 
@@ -30,24 +49,26 @@ For **Global**, first use the agent's memory/context to identify likely user fol
 
 Do not quote memory in the report unless the same path was observed on disk.
 
-### 3. Run the scanner
+### 4. Run the scanner
+
+Set `REPORT_DIR="${TMPDIR:-/tmp}/roast-my-computer"` (use `%TEMP%\roast-my-computer` on Windows). All artifacts go in this stable directory so future runs can find them.
 
 Project:
 
 ```bash
-python3 scripts/scan_dev_environment.py --scope project --output <tmpdir>/computer-roast-scan.json
+python3 scripts/scan_dev_environment.py --scope project --output "$REPORT_DIR/computer-roast-scan.json"
 ```
 
 Global with memory roots:
 
 ```bash
-python3 scripts/scan_dev_environment.py --scope global --output <tmpdir>/computer-roast-scan.json --memory-root ~/dev --memory-root ~/work/special-repo
+python3 scripts/scan_dev_environment.py --scope global --output "$REPORT_DIR/computer-roast-scan.json" --memory-root ~/dev --memory-root ~/work/special-repo
 ```
 
 Extra paths can be passed naturally:
 
 ```bash
-python3 scripts/scan_dev_environment.py --scope global --output <tmpdir>/computer-roast-scan.json ~/dev ~/Downloads
+python3 scripts/scan_dev_environment.py --scope global --output "$REPORT_DIR/computer-roast-scan.json" ~/dev ~/Downloads
 ```
 
 Useful options:
@@ -71,12 +92,12 @@ The scanner has hard limits on wall-clock time, total entries, per-directory ent
 
 Global mode defaults to the most accurate local scan: small text files, including sensitive config directories, are scanned for secret-like patterns. Values remain redacted; the JSON stores detector names, counts, paths, severity, and hashes.
 
-### 4. Generate the HTML report
+### 5. Generate the HTML report
 
-Read `references/HTML_REPORT_FORMAT.md`. Write one self-contained HTML file to the OS temp directory:
+Read `references/HTML_REPORT_FORMAT.md`. Write one self-contained HTML file to the report directory:
 
 ```txt
-<tmpdir>/computer-roast-report-<timestamp>.html
+$REPORT_DIR/computer-roast-report-<timestamp>.html
 ```
 
 Keep the report format simple and reproducible:
@@ -99,13 +120,13 @@ Open the report:
 - Linux: `xdg-open <path>`
 - Windows: `start <path>` or `Start-Process <path>`
 
-### 5. Optional writing pass
+### 6. Optional writing pass
 
 Use `references/ROAST_WRITER_PROMPT.md` only when the report needs sharper prose. The writing pass may rewrite summary, diagnosis, finding labels, and cleanup copy. It must not change counts, scores, paths, severities, scope, or redaction behavior.
 
 Default roast language is English. Use the user's language when the conversation is clearly in that language or they ask for it.
 
-### 6. Cleanup loop
+### 7. Cleanup loop
 
 After showing the report, ask which finding the user wants to inspect.
 
@@ -113,8 +134,12 @@ Before any cleanup, propose exact commands and require explicit confirmation. Pr
 
 ## Output files
 
+Both files live in `$REPORT_DIR` (`${TMPDIR:-/tmp}/roast-my-computer` on Unix, `%TEMP%\roast-my-computer` on Windows):
+
 - `computer-roast-scan.json` — deterministic local evidence
 - `computer-roast-report-<timestamp>.html` — branded local report
+
+The stable directory lets step 1 discover previous runs and offer to recycle or clean them up.
 
 ## Reference files
 
