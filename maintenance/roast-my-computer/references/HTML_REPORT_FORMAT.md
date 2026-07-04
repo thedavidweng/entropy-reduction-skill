@@ -388,12 +388,16 @@ Use these fields when present:
 - `scores.title`
 - `scan_policy.scope`
 - `scan_roots[]`
+- `root_summaries[]` — per-root counts, including `installer_archive_count` for attributing installers to the root that actually holds them
 - `repositories[]`
-- `findings[]`
-- `examples.*`
+- `findings[]` — each secret finding carries a `source` (`user_config`, `editor_cache`, `test_fixture`, `public_key`, `app_bundle_public_key`) so cleanup copy can branch
+- `repositories[].secret_findings[]` — repo-scoped secrets; each carries `source` and `tracked_in_git`
+- `examples.*` — bounded path/marker examples: `heavy_dependency_dirs`, `installer_archives`, `large_files`, `tool_markers`, `ai_markers`
 - `totals.*`
 
 If a field is missing, render a graceful placeholder instead of inventing fake precision.
+
+Never blanket-attribute `totals.installer_archive_count` to Downloads. Sum `root_summaries[].installer_archive_count` and name the roots that actually hold the installers (Downloads, `~/Library/Application Support`, etc.).
 
 ## Language
 
@@ -459,16 +463,16 @@ The header has two jobs:
 
 Locality and scope were already confirmed in the workflow's scope-selection step — do not re-state "local-only", "nothing uploaded", or re-litigate scope in the report copy.
 
-Use one line only for the summary strip. Good English examples:
+Use one line only for the summary strip. Attribute installer counts to the roots that actually hold them (`root_summaries[].installer_archive_count`), never blanket-attribute the global `totals.installer_archive_count` to Downloads. Good English examples:
 
 - `50 repos on disk, 6 never made it past git init — README is your only deliverable.`
-- `119 installers gathering dust in Downloads, and a markdown file handing out AWS keys like party flyers.`
+- `119 installers gathering dust — only 8 in Downloads, the rest buried in ~/Library/Application Support. A markdown file hands out AWS keys like party flyers.`
 - `739 AI-slop markers. git init is your finish line; shipping is a rumor.`
 
 Good Chinese examples:
 
 - `50 个 repo 躺在磁盘上，6 个 git init 完就再没动过。`
-- `Downloads 里 119 个安装包吃灰，还有个 md 把 AWS key 当传单撒。`
+- `119 个安装包吃灰——Downloads 里只有 8 个，其余埋在 ~/Library/Application Support。还有个 md 把 AWS key 当传单撒。`
 - `739 个 AI slop 标记。git init 是你的终点线，shipping 是传闻。`
 
 ## Score cards
@@ -515,6 +519,12 @@ The copy should be evidence-backed but looser than the tables. It can combine se
 - AI slop markers
 - toolchain hoarding
 
+Sourcing rules for the prose:
+
+- Concrete AI-slop phrases ("Phase 1", "future work", "production-ready") must come from `examples.ai_markers` (each entry has `detector`, `sample`, `path`, `count`). Do not invent phrases the scanner did not surface. If `examples.ai_markers` is empty, report only the aggregate `totals.ai_marker_count` and the detector breakdown in `ai_marker_counts`.
+- When citing secret counts, branch on `findings[].source`: `editor_cache` and `app_bundle_public_key` and `test_fixture` are real-but-different-cleanup findings, not the same risk as `user_config`. Say "X critical, but Y of those are editor history / public keys / test fixtures — the real action is Z" rather than treating all criticals equally.
+- Attribute installer counts per root (`root_summaries[].installer_archive_count`), not to Downloads by default.
+
 Good structure:
 
 ```txt
@@ -528,9 +538,9 @@ Good English diagnosis copy:
 ```txt
 50 repos, 6 never made it past git init. fatal-drive has no README and no future; bypass-paywalls-chrome-clean has been sitting at 584 days stale, gathering patina.
 
-Downloads is a DMG collection — 119 installers gathering dust. A markdown file called kk-brain-keys.md hands out AWS and OpenAI keys like party flyers. 491 secret-like patterns surfaced; 42 are critical. Antigravity's editor history is hoarding OpenAI keys you forgot you pasted.
+119 installers gathering dust — only 8 in Downloads, the rest buried in ~/Library/Application Support (zoom update bundles, mostly). A markdown file called kk-brain-keys.md hands out AWS and OpenAI keys like party flyers. 491 secret-like patterns surfaced; 42 are critical — but 36 of those are editor undo-history (`source: editor_cache`) and app-bundle public keys (`source: app_bundle_public_key`), so the real cleanup is "clear Antigravity's User/History and rotate the 4 keys you actually pasted," not "torch 42 files."
 
-739 AI-slop markers across the tree. Phase 1, Phase 2, "production-ready", "future work" — the vocabulary of a thousand Codex sessions that shipped a README and a dream. Skills repo alone: 19 future-work markers, 16 phase plans, 13 ai-generated tags. Glass houses.
+739 AI-slop markers across the tree. Pull concrete phrases from `examples.ai_markers` — "Phase 1", "future work", "production-ready" — the vocabulary of a thousand Codex sessions that shipped a README and a dream. Skills repo alone: 19 future-work markers, 16 phase plans, 13 ai-generated tags. Glass houses.
 
 74 heavy dependency directories. node_modules isn't installing packages, it's colonizing the disk.
 ```
@@ -540,9 +550,9 @@ Good Chinese diagnosis copy:
 ```txt
 50 个 repo，6 个 git init 完就再没动过。fatal-drive 连 README 都没有，fork/bypass-paywalls-chrome-clean 躺了 584 天，包浆了。git init 是你的终点线。
 
-Downloads 是个 DMG 收藏夹，119 个安装包吃灰。还翻出一个 kk-brain-keys.md，AWS 和 OpenAI 的 key 当传单撒。一共扫出 491 个类 secret 模式，42 个是 critical。Antigravity 的编辑器历史里藏着一堆你忘了粘过哪儿的 OpenAI key —— 这不是密钥管理，是 token 彩纸。
+119 个安装包吃灰——Downloads 里只有 8 个，其余埋在 ~/Library/Application Support（大多是 zoom 的更新包）。还翻出一个 kk-brain-keys.md，AWS 和 OpenAI 的 key 当传单撒。一共扫出 491 个类 secret 模式，42 个是 critical——但其中 36 个是编辑器历史（`source: editor_cache`）和 app-bundle 公开 key（`source: app_bundle_public_key`），真要动手是"清 Antigravity 的 User/History 再轮换你真粘过的那 4 个 key"，不是"删 42 个文件"。
 
-739 个 AI slop 标记。Phase 1、Phase 2、"production-ready"、"future work" —— 一千个 Codex 会话的词汇表，每个都 ship 了一个 README 和一个梦。光 skills 仓库自己就 19 个 future-work、16 个 phase plan、13 个 ai-generated 标签。玻璃房子。
+739 个 AI slop 标记。具体词从 `examples.ai_markers` 里捞——"Phase 1"、"future work"、"production-ready"——一千个 Codex 会话的词汇表，每个都 ship 了一个 README 和一个梦。光 skills 仓库自己就 19 个 future-work、16 个 phase plan、13 个 ai-generated 标签。玻璃房子。
 
 74 个重型依赖目录。node_modules 不是装包，是殖民你的磁盘。
 ```
@@ -579,7 +589,7 @@ Prefer 4-5 rows:
 <tr><td>▣ ~/dev</td><td>Hundreds of repos</td></tr>
 <tr><td>▣ ~/.config</td><td>Too many tweaks</td></tr>
 <tr><td>▣ ~/Desktop</td><td>Old stuff</td></tr>
-<tr><td>▣ /Applications</td><td>Rarely used apps</td></tr>
+<tr><td>▣ ~/Library/Application Support</td><td>Installer graveyard</td></tr>
 ```
 
 ## Red Flags
@@ -593,6 +603,55 @@ Rules:
 - show severity
 - never show raw secret values
 - keep the list to 5 items
+
+### Aggregation rule (deterministic Red Flags)
+
+`findings` plus every `repositories[].secret_findings` can contain hundreds of entries, with the same path hit by multiple detectors (e.g. `id_rsa` yields both `private_key_file` and `private_key_marker`), and with mixed `source` tags (`user_config`, `editor_cache`, `test_fixture`, `public_key`, `app_bundle_public_key`). Red Flags shows 5, so the selection must be deterministic or every agent renders a different list. Apply this aggregation before rendering — it is also the reference transform for any temporary renderer, so agents stop reinventing severity ordering and hitting KeyError-class bugs.
+
+```python
+SEVERITY_RANK = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+# Lower number = higher priority. user_config wins ties so real leaked keys
+# outrank editor history / public keys / test fixtures in the top 5.
+SOURCE_PRIORITY = {"user_config": 0, "editor_cache": 1, "test_fixture": 2,
+                   "public_key": 3, "app_bundle_public_key": 3}
+
+def aggregate_for_red_flags(scan) -> list[dict]:
+    # 1. Collect every secret_chaos finding from both sources.
+    rows = []
+    for f in scan.get("findings", []):
+        if f.get("category") == "secret_chaos":
+            rows.append({"path": f["paths"][0], "severity": f["severity"],
+                         "detector": f.get("detector"), "source": f.get("source", "user_config")})
+    for repo in scan.get("repositories", []):
+        for sf in repo.get("secret_findings", []):
+            rows.append({"path": sf["path"], "severity": sf["severity"],
+                         "detector": sf.get("detector"), "source": sf.get("source", "user_config")})
+    # 2. Merge by path: highest severity wins; keep all detector names; keep the
+    #    highest-priority source so user_config surfaces over editor_cache etc.
+    by_path: dict[str, dict] = {}
+    for r in rows:
+        cur = by_path.get(r["path"])
+        if cur is None:
+            by_path[r["path"]] = {"path": r["path"], "severity": r["severity"],
+                                  "detectors": {r["detector"]} - {None}, "source": r["source"]}
+        else:
+            if SEVERITY_RANK[r["severity"]] > SEVERITY_RANK[cur["severity"]]:
+                cur["severity"] = r["severity"]
+            if r["detector"]:
+                cur["detectors"].add(r["detector"])
+            if SOURCE_PRIORITY.get(r["source"], 0) < SOURCE_PRIORITY.get(cur["source"], 0):
+                cur["source"] = r["source"]
+    # 3. Drop low-severity noise (downgraded public keys / app bundles) unless
+    #    it is all we have — avoids an empty panel while still hiding the noise.
+    kept = [v for v in by_path.values() if v["severity"] != "low"]
+    if not kept:
+        kept = list(by_path.values())
+    # 4. Sort: severity desc, then source priority (user_config first), then path.
+    kept.sort(key=lambda v: (-SEVERITY_RANK[v["severity"]], SOURCE_PRIORITY.get(v["source"], 0), v["path"]))
+    return kept[:5]
+```
+
+Render each aggregated row as: path or filename · detector summary (join `detectors` with `/`) · severity label. Tag `editor_cache` / `test_fixture` / `public_key` rows in the copy so the reader knows they are not all "you committed a key" findings.
 
 Example:
 

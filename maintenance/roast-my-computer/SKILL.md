@@ -90,7 +90,9 @@ Useful options:
 
 The scanner has hard limits on wall-clock time, total entries, per-directory entries, and repository count. A scan never runs forever — when a limit is hit it stops, writes partial results, and sets `scan_policy.truncated` with the reason (`time_limit` or `entry_limit`). The HTML report should note when a scan was truncated so the roast reflects incomplete coverage rather than pretending the machine is clean.
 
-Global mode defaults to the most accurate local scan: small text files, including sensitive config directories, are scanned for secret-like patterns. Values remain redacted; the JSON stores detector names, counts, paths, severity, and hashes.
+Global mode defaults to the most accurate local scan: small text files, including sensitive config directories, are scanned for secret-like patterns. Values remain redacted; the JSON stores detector names, counts, paths, severity, hashes, and a `source` tag (`user_config`, `editor_cache`, `test_fixture`, `public_key`, `app_bundle_public_key`) so cleanup copy can branch on the kind of risk instead of treating every critical identically. Public-key names and `.app/Contents/` paths are downgraded to `low`; test fixtures are capped at `medium`; editor undo-history and auto-backups keep their severity but are tagged `editor_cache` because the cleanup action (clear history) differs from rotating a committed key.
+
+`/Applications` is not a default macOS root — app bundles inflate Digital Landfill with un-cleanable dylibs and produce public-key false positives. Pass `--root /Applications --max-depth 1` explicitly if app coverage is wanted.
 
 ### 5. Generate the HTML report
 

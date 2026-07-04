@@ -83,6 +83,7 @@ class Finding:
     evidence: dict[str, Any] = field(default_factory=dict)
     paths: list[str] = field(default_factory=list)
     detector: str | None = None
+    source: str = "user_config"
 
 
 @dataclass
@@ -172,6 +173,62 @@ def is_private_key_like_path(path: Path) -> bool:
     return False
 
 
+SEVERITY_RANK = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+
+_EDITOR_CACHE_MARKERS = ("history", ".backups", "user data", "local history")
+_TEST_DIR_NAMES = {"tests", "__tests__", "test", "fixtures", "__fixtures__", "spec", "specs"}
+
+
+def _cap_severity(finding: "Finding", cap: str) -> None:
+    if SEVERITY_RANK.get(finding.severity, 0) > SEVERITY_RANK[cap]:
+        finding.severity = cap
+
+
+def is_public_key_name(name: str) -> bool:
+    lower = name.lower()
+    return any(tok in lower for tok in ("public", "pubkey", "publickey"))
+
+
+def path_is_under_app_bundle(path: Path) -> bool:
+    return any(part.endswith(".app") for part in path.parts)
+
+
+def path_is_editor_cache(path: Path) -> bool:
+    lower = str(path).lower()
+    return any(marker in lower for marker in _EDITOR_CACHE_MARKERS)
+
+
+def path_is_test_fixture(path: Path) -> bool:
+    if any(part in _TEST_DIR_NAMES for part in path.parts):
+        return True
+    name = path.name.lower()
+    return bool(re.search(r"(?:^|[._-])test(?:[._-]|$)|_spec\.|\.spec\.|\.test\.", name))
+
+
+def classify_secret_finding(finding: "Finding", path: Path) -> None:
+    """Tag ``source`` and cap severity to suppress known false-positive classes.
+
+    - test fixtures (tests/, __tests__/, fixtures/, *_test.*, *.test.*): cap at medium
+    - public-key names or anything inside an .app bundle: cap at low
+    - editor undo-history / backup paths: keep severity but tag source=editor_cache
+      so cleanup copy can branch (clear editor history vs rotate committed keys)
+    """
+    if finding.category != "secret_chaos":
+        return
+    if path_is_test_fixture(path):
+        finding.source = "test_fixture"
+        _cap_severity(finding, "medium")
+        return
+    if is_public_key_name(path.name) or path_is_under_app_bundle(path):
+        finding.source = "app_bundle_public_key" if path_is_under_app_bundle(path) else "public_key"
+        _cap_severity(finding, "low")
+        return
+    if path_is_editor_cache(path):
+        finding.source = "editor_cache"
+        return
+    finding.source = "user_config"
+
+
 def is_text_candidate(path: Path, include_sensitive_key_files: bool = False) -> bool:
     name = path.name.lower()
     suffix = path.suffix.lower()
@@ -209,6 +266,15 @@ def existing(paths: Iterable[Path]) -> list[Path]:
         if key in seen:
             continue
         if rp.exists():
+            # Skip empty directories — they contribute 0/0 and only clutter scan_roots.
+            # Keep roots we cannot list (permission errors) so the scan can record them.
+            if is_dir_no_follow(rp):
+                try:
+                    empty = next(rp.iterdir(), None) is None
+                except (OSError, PermissionError):
+                    empty = False
+                if empty:
+                    continue
             seen.add(key)
             out.append(rp)
     return out
@@ -224,7 +290,7 @@ def default_roots(include_cache_dirs: bool = False) -> list[Path]:
     ]
     system = human_platform()
     if system == "macos":
-        roots += [home / "Library" / "Application Support", home / "Library" / "Caches", Path("/Applications")]
+        roots += [home / "Library" / "Application Support", home / "Library" / "Caches"]
     elif system == "linux":
         roots += [home / ".local" / "share", home / ".cache", Path("/opt")]
     elif system == "windows":
@@ -323,35 +389,42 @@ def dir_size_shallow(path: Path, max_entries: int = 2500) -> tuple[int, int]:
     return total, count
 
 
-def scan_file_for_patterns(path: Path, max_file_size: int, include_sensitive_key_files: bool = False) -> tuple[list[Finding], dict[str, int]]:
+def scan_file_for_patterns(path: Path, max_file_size: int, include_sensitive_key_files: bool = False) -> tuple[list[Finding], dict[str, int], list[dict[str, Any]]]:
     findings: list[Finding] = []
     ai_counts: dict[str, int] = {}
+    ai_samples: list[dict[str, Any]] = []
     try:
         st = path.stat()
     except OSError:
-        return findings, ai_counts
+        return findings, ai_counts, ai_samples
     if st.st_size > max_file_size or not is_text_candidate(path, include_sensitive_key_files=include_sensitive_key_files):
-        return findings, ai_counts
+        return findings, ai_counts, ai_samples
     try:
         text = path.read_text(encoding="utf-8", errors="ignore")
     except Exception:
-        return findings, ai_counts
+        return findings, ai_counts, ai_samples
     for detector, rx in SECRET_PATTERNS:
         matches = list(rx.finditer(text))
         if matches:
-            findings.append(Finding(
+            f = Finding(
                 category="secret_chaos",
                 severity="critical" if detector in {"private_key_marker", "aws_access_key_id", "github_token", "openai_api_key"} else "high",
                 title=f"redacted secret-like pattern detected: {detector}",
                 detector=detector,
                 paths=[safe_path(path)],
                 evidence={"matches": len(matches), "redacted": True, "path_hash": path_hash(path)},
-            ))
+            )
+            classify_secret_finding(f, path)
+            findings.append(f)
+    file_samples: dict[str, str] = {}
     for detector, rx in AI_SLOP_PATTERNS:
-        count = len(rx.findall(text))
-        if count:
-            ai_counts[detector] = ai_counts.get(detector, 0) + count
-    return findings, ai_counts
+        matches = list(rx.finditer(text))
+        if matches:
+            ai_counts[detector] = ai_counts.get(detector, 0) + len(matches)
+            file_samples[detector] = matches[0].group(0)[:100]
+    for detector, count in sorted(ai_counts.items(), key=lambda kv: kv[1], reverse=True)[:3]:
+        ai_samples.append({"detector": detector, "sample": file_samples[detector], "path": safe_path(path), "count": count})
+    return findings, ai_counts, ai_samples
 
 
 
@@ -396,6 +469,7 @@ def scan_repo(repo: Path, max_file_size: int, content_scan: bool, sensitive_cont
     repo_info["remote_count"] = len(remotes.splitlines()) if remotes else 0
     tracked_env = run_git(repo, ["ls-files", ".env", "*.env", ".npmrc", ".pypirc", ".netrc", "*.pem", "*.key", "id_rsa", "id_ed25519"])
     repo_info["tracked_sensitive_config_files"] = tracked_env.splitlines() if tracked_env else []
+    tracked_sensitive = set(repo_info["tracked_sensitive_config_files"])
 
     if content_scan:
         scanned = 0
@@ -421,11 +495,17 @@ def scan_repo(repo: Path, max_file_size: int, content_scan: bool, sensitive_cont
                             markers = repo_info["ai_slop_markers"]
                             markers[detector] = markers.get(detector, 0) + count
                     for secret in scan_file_for_patterns(path, max_file_size, include_sensitive_key_files=sensitive_content_scan)[0]:
+                        try:
+                            rel = str(path.resolve().relative_to(repo.resolve()))
+                        except (ValueError, OSError):
+                            rel = ""
                         repo_info["secret_findings"].append({
                             "severity": secret.severity,
                             "detector": secret.detector,
                             "path": secret.paths[0],
                             "redacted": True,
+                            "source": secret.source,
+                            "tracked_in_git": rel in tracked_sensitive,
                         })
             except Exception:
                 continue
@@ -483,7 +563,7 @@ def title_for(scores: dict[str, int], overall: int) -> str:
     else:
         prefix = "Suspiciously Functional Adult"
     suffixes = {
-        "digital_landfill": "Downloads Landfill Baron",
+        "digital_landfill": "Archive Hoarder",
         "abandoned_projects": "Half-Finished Project Goblin",
         "secret_chaos": "Plaintext Token Philanthropist",
         "git_shame": "Commit Avoidance Specialist",
@@ -581,13 +661,14 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
     large_examples: list[str] = []
     tool_markers: list[str] = []
     ai_counts: dict[str, int] = {}
+    ai_samples: list[dict[str, Any]] = []
     repos: list[Path] = []
     seen_repos: set[str] = set()
 
     for root in roots:
         if budget is not None and not budget.check():
             break
-        root_info = {"path": safe_path(root), "files": 0, "dirs": 0, "bytes_shallow": 0, "permission_errors": 0}
+        root_info = {"path": safe_path(root), "files": 0, "dirs": 0, "bytes_shallow": 0, "permission_errors": 0, "installer_archive_count": 0}
         if is_dir_no_follow(root) and (root / ".git").exists():
             key = safe_path(root)
             if key not in seen_repos:
@@ -628,6 +709,7 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
                     totals["download_file_count"] += 1
                 if suffix in INSTALLER_EXTENSIONS:
                     totals["installer_archive_count"] += 1
+                    root_info["installer_archive_count"] += 1
                     if len(installer_examples) < 12:
                         installer_examples.append(safe_path(entry))
                 if st.st_size > 500 * 1024 * 1024:
@@ -635,27 +717,32 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
                     if len(large_examples) < 12:
                         large_examples.append(f"{safe_path(entry)} ({round(st.st_size / (1024 ** 3), 2)} GB)")
                 if is_sensitive_config_path(entry):
-                    findings.append(Finding(
+                    cfg_f = Finding(
                         category="secret_chaos",
                         severity="medium",
                         title="sensitive configuration file present",
                         paths=[safe_path(entry)],
                         evidence={"metadata_only": True, "content_scan_skipped": bool(not sensitive_content_scan), "path_hash": path_hash(entry)},
-                    ))
+                    )
+                    classify_secret_finding(cfg_f, entry)
+                    findings.append(cfg_f)
                 if is_private_key_like_path(entry):
-                    findings.append(Finding(
+                    pk_f = Finding(
                         category="secret_chaos",
                         severity="critical",
                         title="private key-like file present",
                         paths=[safe_path(entry)],
                         evidence={"metadata_only": True, "content_scan_skipped": bool(not sensitive_content_scan), "path_hash": path_hash(entry)},
                         detector="private_key_file",
-                    ))
+                    )
+                    classify_secret_finding(pk_f, entry)
+                    findings.append(pk_f)
                 if content_scan and (sensitive_content_scan or not is_under_metadata_only_dir(entry)):
-                    secret_findings, local_ai = scan_file_for_patterns(entry, max_file_size, include_sensitive_key_files=sensitive_content_scan)
+                    secret_findings, local_ai, local_samples = scan_file_for_patterns(entry, max_file_size, include_sensitive_key_files=sensitive_content_scan)
                     findings.extend(secret_findings)
                     for k, v in local_ai.items():
                         ai_counts[k] = ai_counts.get(k, 0) + v
+                    ai_samples.extend(local_samples)
             except PermissionError:
                 root_info["permission_errors"] += 1
             except OSError:
@@ -667,6 +754,20 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
             totals["secret_risk_count"] += 1
     totals["ai_marker_count"] = sum(ai_counts.values())
 
+    # Build bounded, diverse ai_markers examples: top samples by count, capped at 3 per
+    # detector so one verbose file can't monopolize the list. Mirrors the other 4 example
+    # buckets (heavy_dependency_dirs / installer_archives / large_files / tool_markers).
+    ai_marker_examples: list[dict[str, Any]] = []
+    per_detector: dict[str, int] = {}
+    for s in sorted(ai_samples, key=lambda d: d.get("count", 0), reverse=True):
+        det = s["detector"]
+        if per_detector.get(det, 0) >= 3:
+            continue
+        per_detector[det] = per_detector.get(det, 0) + 1
+        ai_marker_examples.append(s)
+        if len(ai_marker_examples) >= 12:
+            break
+
     return {
         "root_summaries": root_summaries,
         "findings": [f.__dict__ for f in findings],
@@ -676,6 +777,7 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
             "installer_archives": installer_examples,
             "large_files": large_examples,
             "tool_markers": tool_markers,
+            "ai_markers": ai_marker_examples,
         },
         "ai_marker_counts": ai_counts,
     }, repos
@@ -728,7 +830,7 @@ def main() -> int:
         scan["totals"]["secret_risk_count"] += len(repo.get("secret_findings", []))
 
     summary = {
-        "schema_version": "1.5.0",
+        "schema_version": "1.6.0",
         "generated_at": now_iso(),
         "host": {
             "platform": human_platform(),
