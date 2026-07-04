@@ -91,6 +91,7 @@ Style-guided content generation and review.
 
 | Skill | Description |
 |-------|-------------|
+| **[roast-my-computer](maintenance/roast-my-computer/)** | Scan your local machine and generate a privacy-safe developer roast report — abandoned projects, dependency graveyards, git shame, AI slop, redacted secret risk. |
 | **[skill-repo-maintenance](maintenance/skill-repo-maintenance/)** | Maintain and reorganize agent skills within a skills repository. Rename skills, fix installation commands, and avoid CLI pitfalls. |
 | **[stale-docs-cleanup](maintenance/stale-docs-cleanup/)** | Delete stale docs, move future work into issues, preserve human-facing guides and frozen contracts. |
 ---
