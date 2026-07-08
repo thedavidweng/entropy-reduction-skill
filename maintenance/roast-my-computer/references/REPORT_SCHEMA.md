@@ -1,6 +1,6 @@
 # Report Schema
 
-`scan_dev_environment.py` writes `schema_version: 1.5.0`.
+`scan_dev_environment.py` writes `schema_version: 1.6.0`.
 
 ## Top-level fields
 
@@ -8,13 +8,45 @@
 - `generated_at`: ISO timestamp
 - `host`: platform metadata with hashed hostname
 - `scan_policy`: local-only, scope, project root, content-scan, sensitive-content-scan, redaction, depth, size limits, entry/time budgets, repository scan limit metadata, and truncation status
-- `scan_roots`: absolute paths scanned
-- `root_summaries`: per-root counts
+- `scan_roots`: absolute paths scanned (empty directories are filtered out before scanning)
+- `root_summaries`: per-root counts, including `installer_archive_count` so installers can be attributed to the root that actually holds them
 - `totals`: aggregate counts
-- `examples`: bounded path examples
+- `examples`: bounded path examples, including `ai_markers` (each entry: `detector`, `sample`, `path`, `count`)
 - `findings`: redacted structured risks
 - `repositories`: Git repository summaries
 - `scores`: overall and six dimensions
+
+## Finding shape
+
+Sensitive directory findings may include redacted detector findings from small text files; raw values remain excluded. In conservative mode (`--metadata-only-sensitive-dirs`), those paths produce metadata-only findings. Private-key-like files such as `id_rsa`, `id_ed25519`, `private_key.pem`, or suspicious `.key`/`.pem` names are always detected by path metadata.
+
+Each `secret_chaos` finding carries a `source` tag so cleanup copy can branch on the *kind* of risk rather than treating every critical identically:
+
+| `source` | Meaning | Cleanup action |
+|----------|---------|----------------|
+| `user_config` | A file the user wrote or tracked (`.ssh`, `.aws`, `opencode.json`, `.env`, a real private key under a developer's `.app` project, etc.) | Rotate / move to a secret store |
+| `editor_cache` | Editor undo-history or auto-backup that captured a key (directory named `History`, `.backups`, `User Data`, or `Local History`) | Clear editor history, then rotate the source key |
+| `test_fixture` | A fake key in `tests/`, `__tests__/`, `fixtures/`, `*_test.*`, `*.test.*` | No action — these are redaction verification fixtures; severity is capped at medium |
+| `public_key` | A file whose name contains `public`/`pubkey`/`publickey` | No action — public keys are not secrets; severity is capped at low |
+| `app_bundle_public_key` | A public-key-name file that also lives under a `*.app` path | No action — app-bundle public keys are not user secrets; severity is capped at low. A real private key under a developer's `.app` project directory is NOT downgraded (only the public-key-name signal triggers the cap). |
+
+Repo-scoped secrets in `repositories[].secret_findings[]` additionally carry `tracked_in_git` (true when the path appears in `git ls-files` output), which reconciles the previous overlap between `tracked_sensitive_config_files` and `secret_findings`: a tracked file now shows up once as a `secret_findings` entry with `tracked_in_git: true`, rather than as two separate concepts the agent had to merge by hand.
+
+```json
+{
+  "category": "secret_chaos",
+  "severity": "critical",
+  "title": "redacted secret-like pattern detected: github_token",
+  "evidence": {
+    "matches": 1,
+    "redacted": true,
+    "path_hash": "..."
+  },
+  "paths": ["/local/path/.env"],
+  "detector": "github_token",
+  "source": "user_config"
+}
+```
 
 ## Scan scope
 
@@ -42,25 +74,6 @@ The scanner has hard limits so it never runs forever. When a limit is hit, the s
 - `truncation_reason`: `time_limit`, `entry_limit`, or null
 
 When `truncated` is true, the HTML report should display a truncation notice so the roast reflects incomplete coverage rather than implying the machine was fully scanned.
-
-## Finding shape
-
-Sensitive directory findings may include redacted detector findings from small text files; raw values remain excluded. In conservative mode (`--metadata-only-sensitive-dirs`), those paths produce metadata-only findings. Private-key-like files such as `id_rsa`, `id_ed25519`, `private_key.pem`, or suspicious `.key`/`.pem` names are always detected by path metadata.
-
-```json
-{
-  "category": "secret_chaos",
-  "severity": "critical",
-  "title": "redacted secret-like pattern detected: github_token",
-  "evidence": {
-    "matches": 1,
-    "redacted": true,
-    "path_hash": "..."
-  },
-  "paths": ["/local/path/.env"],
-  "detector": "github_token"
-}
-```
 
 ## HTML contract
 

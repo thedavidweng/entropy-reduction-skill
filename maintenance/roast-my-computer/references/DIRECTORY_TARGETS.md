@@ -37,7 +37,8 @@ These are scanned for small text secret-like patterns in Global mode by default.
 
 - `~/Library/Application Support`
 - `~/Library/Caches` when cache scanning is requested
-- `/Applications`
+
+`/Applications` is **not** a default root. App bundles inflate Digital Landfill with dylibs the user cannot clean (Affinity, Final Cut, etc.) and produce public-key false positives from bundled `*.pem`/`*.key` files. If the user explicitly wants app coverage, pass `--root /Applications --max-depth 1` and prefer `--no-content-scan` there — metadata-only, shallow.
 
 ## Linux
 
