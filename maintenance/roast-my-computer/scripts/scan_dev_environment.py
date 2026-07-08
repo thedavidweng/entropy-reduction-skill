@@ -193,6 +193,17 @@ def path_is_under_app_bundle(path: Path) -> bool:
     return any(part.endswith(".app") for part in path.parts)
 
 
+def _under_any_repo(path: Path, repo_paths: set[Path]) -> bool:
+    """Return True if ``path`` is inside any of the resolved repo roots."""
+    if not repo_paths:
+        return False
+    try:
+        resolved = path.resolve()
+    except OSError:
+        return False
+    return any(repo in resolved.parents for repo in repo_paths)
+
+
 def path_is_editor_cache(path: Path) -> bool:
     """Match editor undo-history / auto-backup directories by path *component*,
     not by substring. A project named ``credit-history-api`` is one component
@@ -202,7 +213,7 @@ def path_is_editor_cache(path: Path) -> bool:
 
 
 def path_is_test_fixture(path: Path) -> bool:
-    if any(part in _TEST_DIR_NAMES for part in path.parts):
+    if any(part.lower() in _TEST_DIR_NAMES for part in path.parts):
         return True
     name = path.name.lower()
     return bool(re.search(r"(?:^|[._-])test(?:[._-]|$)|_spec\.|\.spec\.|\.test\.", name))
@@ -671,6 +682,11 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
     ai_samples: list[dict[str, Any]] = []
     repos: list[Path] = []
     seen_repos: set[str] = set()
+    # Resolved paths of repos discovered during traversal, used to skip AI marker
+    # counting for files inside repos — scan_repo() is the authoritative source for
+    # repo file AI markers and adds them to totals in main(), so counting them here
+    # too would double-count and inflate the ai_slop score.
+    repo_paths: set[Path] = set()
 
     for root in roots:
         if budget is not None and not budget.check():
@@ -681,6 +697,10 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
             if key not in seen_repos:
                 seen_repos.add(key)
                 repos.append(root)
+                try:
+                    repo_paths.add(root.resolve())
+                except OSError:
+                    pass
         if is_file_no_follow(root):
             entries = [root]
         else:
@@ -695,6 +715,10 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
                         if key not in seen_repos:
                             seen_repos.add(key)
                             repos.append(entry)
+                            try:
+                                repo_paths.add(entry.resolve())
+                            except OSError:
+                                pass
                     if entry.name in HEAVY_DIR_NAMES:
                         totals["heavy_dependency_dirs"] += 1
                         if len(heavy_examples) < 12:
@@ -747,9 +771,13 @@ def summarize_roots(roots: list[Path], max_depth: int, content_scan: bool, max_f
                 if content_scan and (sensitive_content_scan or not is_under_metadata_only_dir(entry)):
                     secret_findings, local_ai, local_samples = scan_file_for_patterns(entry, max_file_size, include_sensitive_key_files=sensitive_content_scan)
                     findings.extend(secret_findings)
-                    for k, v in local_ai.items():
-                        ai_counts[k] = ai_counts.get(k, 0) + v
-                    ai_samples.extend(local_samples)
+                    # Skip AI marker accumulation for files inside discovered repos:
+                    # scan_repo() re-scans repo files for AI markers and main() adds them
+                    # to totals, so counting them here too would double-count.
+                    if not _under_any_repo(entry, repo_paths):
+                        for k, v in local_ai.items():
+                            ai_counts[k] = ai_counts.get(k, 0) + v
+                        ai_samples.extend(local_samples)
             except PermissionError:
                 root_info["permission_errors"] += 1
             except OSError:
